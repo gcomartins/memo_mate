@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Memo Mate</string>
+    <string name="title_activity_greeting">Greeting</string>
+    <string name="title_activity_app_navigation">AppNavigation</string>
 </resources>
