@@ -1,5 +1,6 @@
 package com.example.memomate.ui.pages.signUp
 
+import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,20 +39,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.memomate.data.User
+import com.example.memomate.service.users.UserRepository
+import kotlinx.coroutines.launch
 
 @Composable
-fun SignUpActivity(navController: NavController) {
+fun SignUpActivity(controller: SignUpController) {
     SignUpForm()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         SignUpForm(
+            controller,
             modifier = Modifier.padding(innerPadding)
         )
     }
 }
 
 @Composable
-fun SignUpForm(modifier: Modifier) {
+fun SignUpForm(controller: SignUpController, modifier: Modifier) {
+    val coroutineScope = rememberCoroutineScope()
+
+    var signUpResult by remember { mutableStateOf<Result<User>?>(null) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -64,7 +74,7 @@ fun SignUpForm(modifier: Modifier) {
                 .padding(horizontal = 16.dp)
         ) {
             MyNameTextField {
-                SignUpForm.name = it
+                SignUpForm.firstName = it
             }
             MyLastNameTextField {
                 SignUpForm.lastName = it
@@ -82,7 +92,19 @@ fun SignUpForm(modifier: Modifier) {
                 SignUpForm.confirmPassword = it
             }
         }
-        MyConfirmSignUpButton(modifier.weight(2f))
+        MyConfirmSignUpButton(modifier.weight(2f)){
+            when(SignUpForm.validateForm()){
+                null -> {
+                    coroutineScope.launch {
+                        val user = SignUpForm.getUserFromForm()
+                        signUpResult = controller.signUpUser(user)
+                    }
+                }
+                else -> {
+
+                }
+            }
+        }
     }
 }
 
@@ -165,18 +187,9 @@ fun MyConfirmPasswordTextField(onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun MyConfirmSignUpButton(modifier: Modifier) {
+fun MyConfirmSignUpButton( modifier: Modifier, onClick: () -> Unit) {
     Button(
-        onClick = {
-            when(SignUpForm.validateForm()){
-                null -> {
-
-                }
-                else -> {
-
-                }
-            }
-        },
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth(),
         shape = RectangleShape
@@ -251,10 +264,4 @@ fun MyTextField(
             else -> PasswordVisualTransformation(mask = mask)
         }
     )
-}
-
-@Preview
-@Composable
-fun SignUpPreview() {
-    SignUpActivity(navController = NavController(LocalContext.current))
 }

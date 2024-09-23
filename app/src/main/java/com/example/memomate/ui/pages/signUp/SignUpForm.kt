@@ -1,8 +1,13 @@
 package com.example.memomate.ui.pages.signUp
 
+import com.example.memomate.data.User
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
+
 class SignUpForm {
     companion object {
-        var name: String? = null
+        var firstName: String? = null
         var lastName: String? = null
         var email: String? = null
         var password: String? = null
@@ -10,8 +15,7 @@ class SignUpForm {
         var birthDate: String? = null
 
         fun validateForm(): ErrorMessages? {
-
-            if (name.isNullOrEmpty()) {
+            if (firstName.isNullOrEmpty()) {
                 return ErrorMessages.ERROR_NAME
             }
             if (lastName.isNullOrEmpty()) {
@@ -38,10 +42,20 @@ class SignUpForm {
 
             return null
         }
+
+        fun getUserFromForm(): User {
+            val birthDate = stringToLocalDate(birthDate!!)
+            return User(firstName!!, lastName!!, email!!, password!!, birthDate)
+        }
+
+        private fun stringToLocalDate(dateString: String): LocalDate {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            return LocalDate.parse(dateString, formatter)
+        }
     }
 
     init {
-        name = null
+        firstName = null
         lastName = null
         email = null
         password = null
