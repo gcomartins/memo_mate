@@ -7,12 +7,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MyRetrofit {
     companion object {
         private var myRetrofit: Retrofit? = null
-        private const val BASE_URL = "https://api.github.com/"
+        private const val BASE_URL = "http://localhost:8080"
 
         fun getInstance(): Retrofit {
             if (myRetrofit == null) {
                 val client = OkHttpClient.Builder()
-                    .authenticator(MyAuthenticator())
+                    .authenticator(MyAuthenticator("meminho", "senhazinha"))
+                    .addInterceptor(MyInterceptor())
                     .build()
 
                 myRetrofit = Retrofit.Builder()

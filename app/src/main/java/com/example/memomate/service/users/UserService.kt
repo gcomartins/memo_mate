@@ -9,18 +9,18 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UserService {
-    @GET("users")
+    @GET("user")
     suspend fun getUsers(): List<User>
 
-    @GET("users/{id}")
+    @GET("user/{id}")
     suspend fun getUser(@Path("id") id: Int): User
 
-    @POST("users")
+    @POST("user/register")
     suspend fun createUser(@Body user: User): User
 
-    @PUT("users/{id}")
+    @PUT("user/{id}")
     suspend fun updateUser(@Path("id") id: Int, @Body user: User): User
 
-    @DELETE("users/{id}")
+    @DELETE("user/{id}")
     suspend fun deleteUser(@Path("id") id: Int)
 }

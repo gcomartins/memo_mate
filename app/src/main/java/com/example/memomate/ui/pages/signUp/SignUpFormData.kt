@@ -2,10 +2,11 @@ package com.example.memomate.ui.pages.signUp
 
 import com.example.memomate.data.User
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
-class SignUpForm {
+class SignUpFormData {
     companion object {
         var firstName: String? = null
         var lastName: String? = null
@@ -44,14 +45,21 @@ class SignUpForm {
         }
 
         fun getUserFromForm(): User {
-            val birthDate = stringToLocalDate(birthDate!!)
-            return User(firstName!!, lastName!!, email!!, password!!, birthDate)
+            // Verifica se os campos não são nulos
+            if (firstName.isNullOrBlank() || lastName.isNullOrBlank() || email.isNullOrBlank() || password.isNullOrBlank() || birthDate.isNullOrBlank()) {
+                throw IllegalArgumentException("Todos os campos devem ser preenchidos.")
+            }
+
+            val birthDateLocal = stringToDate(birthDate!!)
+            return User(firstName!!, lastName!!, email!!, password!!, birthDateLocal)
         }
 
-        private fun stringToLocalDate(dateString: String): LocalDate {
+        private fun stringToDate(dateString: String): Date {
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            return LocalDate.parse(dateString, formatter)
+            val localDate = LocalDate.parse(dateString, formatter)
+            return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
         }
+
     }
 
     init {
